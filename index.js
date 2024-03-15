@@ -3,23 +3,31 @@ const axios = require('axios');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
 const total = new Map();
+
+// API endpoint to get the total data
 app.get('/total', (req, res) => {
-  const data = Array.from(total.values()).map((link, index)  => ({
+  const data = Array.from(total.values()).map((link, index) => ({
     session: index + 1,
     url: link.url,
     count: link.count,
     id: link.id,
     target: link.target,
   }));
-  res.json(JSON.parse(JSON.stringify(data || [], null, 2)));
+  res.json(data);
 });
-app.get('/', (res) => {
+
+// Serve the index.html file
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+// API endpoint to submit the form data
 app.post('/api/submit', async (req, res) => {
   const {
     cookie,
@@ -27,9 +35,13 @@ app.post('/api/submit', async (req, res) => {
     amount,
     interval,
   } = req.body;
-  if (!cookie || !url || !amount || !interval) return res.status(400).json({
-    error: 'Missing state, url, amount, or interval'
-  });
+
+  if (!cookie || !url || !amount || !interval) {
+    return res.status(400).json({
+      error: 'Missing state, url, amount, or interval'
+    });
+  }
+
   try {
     const cookies = await convertCookie(cookie);
     if (!cookies) {
@@ -37,8 +49,9 @@ app.post('/api/submit', async (req, res) => {
         status: 500,
         error: 'Invalid cookies'
       });
-    };
-    await share(cookies, url, amount, interval)
+    }
+
+    await share(cookies, url, amount, interval);
     res.status(200).json({
       status: 200
     });
@@ -50,12 +63,15 @@ app.post('/api/submit', async (req, res) => {
   }
 });
 
+// Function to handle sharing posts
 async function share(cookies, url, amount, interval) {
   const id = await getPostID(url);
   const accessToken = await getAccessToken(cookies);
+
   if (!id) {
     throw new Error("Unable to get link id: invalid URL, it's either a private post or visible to friends only");
   }
+
   const postId = total.has(id) ? id + 1 : id;
   total.set(postId, {
     url,
@@ -63,6 +79,7 @@ async function share(cookies, url, amount, interval) {
     count: 0,
     target: amount,
   });
+
   const headers = {
     'accept': '*/*',
     'accept-encoding': 'gzip, deflate',
@@ -71,21 +88,24 @@ async function share(cookies, url, amount, interval) {
     'cookie': cookies,
     'host': 'graph.facebook.com'
   };
+
   let sharedCount = 0;
   let timer;
+
   async function sharePost() {
     try {
       const response = await axios.post(`https://graph.facebook.com/me/feed?link=https://m.facebook.com/${id}&published=0&access_token=${accessToken}`, {}, {
         headers
       });
-      if (response.status !== 200) {
-      } else {
+
+      if (response.status === 200) {
         total.set(postId, {
           ...total.get(postId),
           count: total.get(postId).count + 1,
         });
         sharedCount++;
       }
+
       if (sharedCount === amount) {
         clearInterval(timer);
       }
@@ -94,12 +114,16 @@ async function share(cookies, url, amount, interval) {
       total.delete(postId);
     }
   }
+
   timer = setInterval(sharePost, interval * 1000);
+
   setTimeout(() => {
     clearInterval(timer);
     total.delete(postId);
   }, amount * interval * 1000);
 }
+
+// Function to get the Post ID
 async function getPostID(url) {
   try {
     const response = await axios.post('https://id.traodoisub.com/api.php', `link=${encodeURIComponent(url)}`, {
@@ -112,6 +136,8 @@ async function getPostID(url) {
     return;
   }
 }
+
+// Function to get the Access Token
 async function getAccessToken(cookie) {
   try {
     const headers = {
@@ -130,9 +156,11 @@ async function getAccessToken(cookie) {
       'sec-fetch-user': '?1',
       'upgrade-insecure-requests': '1',
     };
+
     const response = await axios.get('https://business.facebook.com/content_management', {
       headers
     });
+
     const token = response.data.match(/"accessToken":\s*"([^"]+)"/);
     if (token && token[1]) {
       const accessToken = token[1];
@@ -142,20 +170,29 @@ async function getAccessToken(cookie) {
     return;
   }
 }
+
+// Function to convert Cookie format
 async function convertCookie(cookie) {
   return new Promise((resolve, reject) => {
     try {
       const cookies = JSON.parse(cookie);
       const sbCookie = cookies.find(cookies => cookies.key === "sb");
+
       if (!sbCookie) {
         reject("Detect invalid appstate please provide a valid appstate");
       }
+
       const sbValue = sbCookie.value;
       const data = `sb=${sbValue}; ${cookies.slice(1).map(cookies => `${cookies.key}=${cookies.value}`).join('; ')}`;
+
       resolve(data);
     } catch (error) {
       reject("Error processing appstate please provide a valid appstate");
     }
   });
 }
-app.listen(5000)
+
+// Listen on port 1000
+app.listen(1000, () => {
+  console.log('Server is running on port 1000');
+});
