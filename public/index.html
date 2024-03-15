@@ -1,133 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Facebook Share Boost</title>
-   </head>
-   <body>
-      <div class="wrapper-container">
-         <div class="container">
-            <h1>FACEBOOK SHARE BOOST: CREATED BY VINCENT MAGTOLIS DEV</h1>
-            <p>A user-friendly automated website that utilizes your browser's cookies to streamline the process of sharing posts on Facebook using the provided URL, if you dont know how to get cookies just scroll down and click blue button below.</p>
-         </div>
-         <div class="form-wrapper">
-            <form onsubmit="submitForm(event)" class="form-container">
-               <div class="form-item">
-                  <label for="cookies">COOKIES:</label>
-                  <input type="text" id="cookies" name="cookie" placeholder="">
-               </div>
-               <div class="form-item">
-                  <label for="urls">FACEBOOK LINK:</label>
-                  <input type="text" id="urls" name="url" placeholder="">
-               </div>
-               <div class="form-item">
-                  <label for="amounts">LIMIT:</label>
-                  <input type="text" id="amounts" name="amount" placeholder="">
-               </div>
-               <div class="form-item">
-                  <label for="intervals">DELAY:</label>
-                  <input type="text" id="intervals" name="interval" placeholder="" pattern="[0-9]*">
-               </div>
-               <div class="form-item">
-                  <button type="submit" onclick="submitForm()" id="submit-button">Submit</button>
-               </div>
-               <div class="form-item">
-                  <div id="result"></div>
-               </div>
-            </form>
-         </div>
-         <div class="container" id="process-container">
-            <h1>SHARE BOOST</h1>
-            <h4>PROCESSING:</h4>
-            <div id="processing">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Facebook Share Boost</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+   <style>
+      * {
+         box-sizing: border-box;
+         font-family: 'Poppins', sans-serif;
+      }
+      body {
+         margin: 0;
+         padding: 20px;
+         background-color: #f9f9f9;
+      }
+      .wrapper-container {
+         max-width: 600px;
+         margin: 0 auto;
+         padding: 20px;
+         background-color: #fff;
+         border-radius: 10px;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .container {
+         margin-bottom: 20px;
+      }
+      h1 {
+         color: #333;
+         font-size: 24px;
+         margin-bottom: 10px;
+      }
+      p {
+         color: #666;
+         font-size: 16px;
+         line-height: 1.6;
+      }
+      .form-container {
+         max-width: 400px;
+         margin: 0 auto;
+      }
+      .form-item {
+         margin-bottom: 15px;
+      }
+      label {
+         display: block;
+         font-size: 14px;
+         color: #555;
+         margin-bottom: 5px;
+      }
+      input[type="text"],
+      input[type="submit"] {
+         width: 100%;
+         padding: 10px;
+         border: 1px solid #ccc;
+         border-radius: 5px;
+         font-size: 16px;
+         outline: none;
+      }
+      input[type="text"] {
+         background-color: #f9f9f9;
+      }
+      input[type="submit"] {
+         background-color: #007bff;
+         color: #fff;
+         cursor: pointer;
+      }
+      input[type="submit"]:hover {
+         background-color: #0056b3;
+      }
+      .result-container {
+         background-color: #f0f0f0;
+         border: 1px solid #ccc;
+         padding: 15px;
+         border-radius: 5px;
+         text-align: center;
+         display: none;
+      }
+      .about-us {
+         background-color: #007bff;
+         color: #fff;
+         padding: 20px;
+         border-radius: 5px;
+      }
+      .about-us a {
+         color: #fff;
+         text-decoration: none;
+         font-weight: bold;
+      }
+      .about-us a:hover {
+         text-decoration: underline;
+      }
+   </style>
+</head>
+<body>
+   <div class="wrapper-container">
+      <div class="container">
+         <h1>FACEBOOK SHARE BOOST</h1>
+         <p>A user-friendly automated website that streamlines the process of sharing posts on Facebook using your provided URL.</p>
+      </div>
+      <div class="form-wrapper">
+         <form onsubmit="submitForm(event)" class="form-container">
+            <div class="form-item">
+               <label for="cookies">COOKIES:</label>
+               <input type="text" id="cookies" name="cookie" placeholder="Enter your cookies...">
             </div>
-         </div>
-         <div class="container">
-            <h1>SHARE BOOST</h1>
-            <h4>ABOUT US</h4>
-            <p>"Created by Vincent Magtolis. If there are any errors, you can contact me through my Facebook account, <a href="https://www.facebook.com/vincent.09123455" style="text-decoration: none; color: blue;">here</a>, encouraging developers to contribute, learn, and customize the website</p>
+            <div class="form-item">
+               <label for="urls">FACEBOOK LINK:</label>
+               <input type="text" id="urls" name="url" placeholder="Enter your Facebook link...">
+            </div>
+            <div class="form-item">
+               <label for="amounts">LIMIT:</label>
+               <input type="text" id="amounts" name="amount" placeholder="Enter the limit...">
+            </div>
+            <div class="form-item">
+               <label for="intervals">DELAY:</label>
+               <input type="text" id="intervals" name="interval" placeholder="Enter the delay...">
+            </div>
+            <div class="form-item">
+               <input type="submit" value="Submit">
+            </div>
+         </form>
+         <div class="result-container" id="result">
+            <!-- Result will be displayed here -->
          </div>
       </div>
-      <style>
-         body, html {
-         margin: 0;
-         }
-         body {
-         padding: 20px;
-         font-family: 'Poppins', sans-serif;
-         background: #fff; /* Updated to white */
-         color: #898989;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         }
-         .container {
-         background-color: #28a745; /* Updated to green */
-         border-radius: 10px;
-         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-         padding: 20px;
-         margin: 20px auto;
-         overflow: auto;
-         }
-         .form-item {
-         padding: 8px;
-         }
-         h1 {
-         color: #343a40;
-         }
-         .form-item label {
-         font-size: 13px;
-         color: #495057;
-         margin-bottom: 5px; 
-         display: block; 
-         }
-         input, button {
-         background: #000;
-         color: #fff; 
-         border: solid 1px #222;
-         box-sizing: border-box;
-         width: 100%;
-         margin-bottom: 10px;
-         padding: 10px;
-         border-radius: 4px;
-         font-size: 16px;
-         }
-         button {
-         cursor: none;
-         color: #fff; /* Updated to white */
-         background-color: #000; /* Updated to black */
-         }
-         button:hover {
-         background: #CCC;
-         }
-         #result {
-         display: none;
-         text-align: center;
-         background-color: #ededed;
-         border: solid 1px #222;
-         padding: 10px;
-         border-radius: 4px;
-         color: #0a0a0a;
-         }
-         #process {
-         }
-         .current-online {
-         font-size: 13px;
-         background: #0a0a0a;
-         padding: 10px;
-         color: #898989;
-         border: solid 1px #898989;
-         border-radius: 4px;
-         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-         margin-bottom: 10px;
-         overflow: auto;
-         white-space: nowrap; 
-         }
-      </style>
-      <script>
-         async function submitForm() {
-           event.preventDefault();
-           const result = document.getElementById('result');
-           const button = document.getElementById('submit-button');
+      <div class="container" id="process-container">
+         <h1>SHARE BOOST</h1>
+         <h4>PROCESSING:</h4>
+         <div id="processing"></div>
+      </div>
+      <div class="container about-us">
+         <h1>ABOUT US</h1>
+         <p>Created by Vincent Magtolis. If there are any errors, you can contact me through my Facebook account, <a href="https://www.facebook.com/vincent.09123455">here</a>, encouraging developers to contribute, learn, and customize the website.</p>
+      </div>
+   </div>
+   <script>
+      async function submitForm(event) {
+         event.preventDefault();
+         const result = document.getElementById('result');
+         // Implement your form submission logic here
+         result.style.display = "block";
+      }
+   </script>
+</body>
+</html>
